@@ -1,0 +1,89 @@
+﻿@using Pds.Web.Common
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Pds.Api.Contracts.Controllers.Settings.GetSettings
+@using Pds.Core
+@inject IApiClient ApiClient
+@inject IAccessTokenProvider TokenProvider
+@inject StateContainer StateContainer
+
+@if (StateContainer.Settings != null)
+{
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door" aria-hidden="true"></span> Главная
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="content">
+                <span class="bi bi-camera-video" aria-hidden="true"></span> Контент
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="bills">
+                <span class="bi bi-cash" aria-hidden="true"></span> Доходы
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="costs">
+                <span class="bi bi-basket" aria-hidden="true"></span> Расходы
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="clients">
+                <span class="bi bi-building" aria-hidden="true"></span> Клиенты
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="persons">
+                <span class="bi bi-people" aria-hidden="true"></span> Персоны
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="gifts">
+                <span class="bi bi-gift" aria-hidden="true"></span> Подарки
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="settings">
+                <span class="bi bi-gear" aria-hidden="true"></span> Настройки
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <a
+                class="nav-link"
+                href="@StateContainer.Settings.GetByKey(SettingsKeys.ExternalLink1Url)"
+                target="_blank">
+                <span class="bi bi-link-45deg" aria-hidden="true"></span>
+                @StateContainer.Settings.GetByKey(SettingsKeys.ExternalLink1Title)
+            </a>
+        </li>
+        <li class="nav-item px-3">
+            <a
+                class="nav-link"
+                href="@StateContainer.Settings.GetByKey(SettingsKeys.ExternalLink2Url)"
+                target="_blank">
+                <span class="bi bi-link-45deg" aria-hidden="true"></span>
+                @StateContainer.Settings.GetByKey(SettingsKeys.ExternalLink2Title)
+            </a>
+        </li>
+    </ul>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        StateContainer.OnChange += StateHasChanged;
+        await SetSettingsToStateContainerAsync();
+    }
+    
+    private async Task SetSettingsToStateContainerAsync()
+    {
+        StateContainer.Settings = await ApiClient.Get<GetSettingsResponse>(TokenProvider, "settings");
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

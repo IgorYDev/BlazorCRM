@@ -1,0 +1,263 @@
+﻿@page "/content/{contentId}/edit"
+@inherits BasePageComponent
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Pds.Core.Enums
+@using Pds.Web.Common
+@using static Pds.Web.Common.TitleExtension
+@using AutoMapper
+@using Microsoft.AspNetCore.Components
+@using Pds.Api.Contracts.Controllers.Content
+@using Pds.Api.Contracts.Controllers.Content.EditContent
+@using Pds.Api.Contracts.Controllers.Content.GetContent
+@using Pds.Core
+
+@inject IApiClient ApiClient
+@inject IMapper Mapper
+@inject IAccessTokenProvider TokenProvider
+@inject StateContainer StateContainer
+
+<Title>@WithSuffix("Редактирование контента")</Title>
+
+<h4 class="card-header d-flex justify-content-between align-items-center">
+    Редактирование контента
+    <button @onclick='() => GoBack("/content")' class="btn btn-primary">Назад</button>
+</h4>
+@if (content == null || clients == null || persons == null || StateContainer.Settings == null)
+{
+    <p>
+        <em>Загрузка...</em>
+    </p>
+}
+else
+{
+    <EditForm EditContext="@editContext" OnSubmit="@HandleSubmitAsync">
+        <div class="form-group">
+            <label for="brand_name" class="form-label">Бренд: </label>
+            <button type="button" class="btn btn-secondary btn-sm" id="brand_name" disabled>
+                @content.BrandName
+            </button>
+        </div>
+        <div class="form-group no-wrap">
+            <InputRadioGroup Name="social-media-type" @bind-Value="content.SocialMediaType">
+                @foreach (var socialMediaType in (SocialMediaType[])Enum
+                    .GetValues(typeof(SocialMediaType)))
+                {
+                    var id = $"sm_type_{socialMediaType.ToString()}";
+                    <InputRadio Name="social-media-type" class="btn-check" Value="socialMediaType" Id="@id"/>
+                    <label class="btn btn-secondary" for="@id">
+                        @EnumsTranslator.SocialMediaTypeToRu(socialMediaType)
+                    </label>
+                }
+            </InputRadioGroup>
+        </div>
+
+        <div class="form-group no-wrap">
+            <InputRadioGroup Name="type" @bind-Value="content.Type">
+                @foreach (var type in (ContentType[])Enum
+                    .GetValues(typeof(ContentType)))
+                {
+                    var id = $"type_{type.ToString()}";
+                    <InputRadio Name="type" class="btn-check" Value="type" Id="@id"/>
+                    <label class="btn btn-secondary" for="@id">
+                        @EnumsTranslator.ContentTypeToRu(type)
+                    </label>
+                }
+            </InputRadioGroup>
+        </div>
+
+        <div class="form-group">
+            <label for="title" class="form-label label-required content-label">Заголовок</label>
+            <InputText class="form-control content-title" id="title" @bind-Value="content.Title"/>
+
+            <InputCheckbox name="isFilmed" class="btn-check" @bind-Value="content.IsFilmed" Id="content_is_filmed"/>
+            <label class="btn btn-secondary btn-filmed" for="content_is_filmed">Контент отснят</label>
+        </div>
+
+        <div class="form-group">
+            <label for="release_date" class="form-label label-required">Дата выхода:</label>
+            <InputDate class="form-control release-date" id="release_date" @bind-Value="content.ReleaseDate"/>
+
+            <label for="release_date" class="form-label">Продлится до:</label>
+            <InputDate class="form-control release-date" id="release_date" @bind-Value="content.EndDate"/>
+        </div>
+
+        <div class="form-group">
+            @if (!content.IsFree)
+            {
+                <label for="bill_cost" class="form-label label-required">Стоимость USD:</label>
+                <InputNumber class="form-control bill-cost" id="bill_cost" @bind-Value="content.Bill.Value"/>
+            }
+
+            <InputCheckbox name="isFree" class="btn-check" @bind-Value="content.IsFree" Id="content_is_free"/>
+            <label class="btn btn-secondary btn-free btn-sm" for="content_is_free">Бесплатно</label>
+        </div>
+
+        @if (!content.IsFree)
+        {
+            <div class="form-group">
+                <label for="clients" class="form-label label-required">Клиент</label>
+                <InputSelect class="form-control" id="clients" @bind-Value="content.Bill.ClientId" se>
+                    @foreach (var client in clients)
+                    {
+                        if (client.Id == content.Bill.ClientId)
+                        {
+                            <option value="@client.Id" selected>@client.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@client.Id">@client.Name</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group multi-group">
+                <div class="multi-group-block">
+                    <label for="bill_contact_name" class="form-label label-required">ФИО представителя клиента</label>
+                    <InputText class="form-control" id="bill_contact_name" @bind-Value="content.Bill.ContactName"/>
+                </div>
+
+                <div class="multi-group-block">
+                    <label for="bill_contact_name" class="form-label">Емейл представителя клиента</label>
+                    <InputText class="form-control" id="bill_contact_name" @bind-Value="content.Bill.ContactEmail"/>
+                </div>
+
+                <div class="multi-group-block">
+                    <InputCheckbox name="bill_isContactAgent" class="btn-check" @bind-Value="content.Bill.IsContactAgent" Id="bill_isContactAgent"/>
+                    <label class="btn btn-secondary btn-free btn-sm" for="bill_isContactAgent">Агент</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bill_contact" class="form-label">Контакт представителя клиента</label>
+                <InputText class="form-control" id="bill_contact" @bind-Value="content.Bill.Contact"/>
+                <div class="contact-type">
+                    <InputRadioGroup Name="contact-type" @bind-Value="content.Bill.ContactType">
+                        @foreach (var type in (ContactType[])Enum
+                            .GetValues(typeof(ContactType)))
+                        {
+                            var id = $"contact-type{type.ToString()}";
+                            <InputRadio Name="contact-type" class="btn-check" Value="type" id="@id"/>
+                            <label class="btn btn-secondary btn-sm" for="@id">
+                                @EnumsTranslator.ContactTypeToRu(type)
+                            </label>
+                        }
+                    </InputRadioGroup>
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label for="comment" class="form-label">Комментарий</label>
+            <InputTextArea class="form-control" id="comment" @bind-Value="content.Comment" rows="3"/>
+        </div>
+
+        <div class="form-group">
+            <label for="persons" class="form-label">Персона</label>
+            <InputSelect class="form-control" id="persons" @bind-Value="content.PersonId">
+                @foreach (var person in persons)
+                {
+                    if (person.Id == content.PersonId)
+                    {
+                        <option value="@person.Id" selected>@person.FullName</option>
+                    }
+                    else
+                    {
+                        <option value="@person.Id">@person.FullName</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <ObjectGraphDataAnnotationsValidator />
+        <ValidationSummary/>
+
+        <div class="form-group d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-success" disabled="@isEditButtonDisabled">Сохранить</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string ContentId { get; set; }
+    private List<ClientForLookupDto> clients;
+    private List<PersonForLookupDto> persons;
+    private EditContentRequest content;
+    private EditContext editContext;
+    private ValidationMessageStore msgStore;
+    private bool isEditButtonDisabled;
+    private DateTime originalReleaseDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isEditButtonDisabled = false;
+        content = await GetContentAsync();
+        clients = await GetClientsAsync(content.Bill?.ClientId);
+        persons = await GetPersonsAsync(content.BrandId, content.PersonId);
+        editContext = new EditContext(content);
+        editContext.OnFieldChanged += EditContext_OnFieldChangedAsync;
+        msgStore = new ValidationMessageStore(editContext);
+        originalReleaseDate = content.ReleaseDate;
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        content.Bill = content.IsFree ? null : content.Bill;
+        msgStore.Clear();
+        var isValid = editContext.Validate();
+
+        if (isValid)
+        {
+            isEditButtonDisabled = true;
+            var result = await ApiClient.Put<object, EditContentRequest>(TokenProvider, "content", content);
+            isEditButtonDisabled = false;
+            if (result.IsSuccessStatusCode)
+            {
+                GoBack("/content");
+            }
+            else
+            {
+                result.AddErrors(msgStore, editContext);
+            }
+        }
+    }
+
+    private async Task<EditContentRequest> GetContentAsync()
+    {
+        var contentResponse = await ApiClient.Get<GetContentResponse>(TokenProvider, $"content/{ContentId}");
+        var content = Mapper.Map<EditContentRequest>(contentResponse);
+        content.IsFree = content.BillId == null;
+        content.Bill ??= new EditContentBillDto();
+        return content;
+    }
+
+    private async Task<List<ClientForLookupDto>> GetClientsAsync(Guid? contentClientId)
+    {
+        return await ApiClient.Get<List<ClientForLookupDto>>(TokenProvider, $"content/get-clients/clients/{contentClientId}");
+    }
+
+    private async Task<List<PersonForLookupDto>> GetPersonsAsync(Guid brandId, Guid? contentPersonId)
+    {
+        return await ApiClient.Get<List<PersonForLookupDto>>(TokenProvider, $"content/get-persons/brands/{brandId}/persons/{contentPersonId}");
+    }
+
+    private void EditContext_OnFieldChangedAsync(object sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName == "IsFilmed")
+        {
+
+            if (content.IsFilmed)
+            {
+                content.ReleaseDate = originalReleaseDate;
+            }
+            else
+            {
+                // Set default "Release dat" for not filmed content
+                var releaseDateString = StateContainer.Settings.GetByKey(SettingsKeys.NotFilmedContentDefaultReleaseDate);
+                content.ReleaseDate = DateTime.TryParse(releaseDateString, out var releaseDate) ? releaseDate : originalReleaseDate;
+            }
+            editContext.NotifyFieldChanged(new FieldIdentifier(content, "ReleaseDate"));
+        }
+    }
+}

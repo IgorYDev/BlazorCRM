@@ -1,0 +1,89 @@
+﻿.person-header {
+    width: 200px;
+}
+
+.card-header {
+    margin-bottom: 15px;
+}
+
+.rate-header {
+    width: 100px;
+    text-align: center;
+}
+
+.topics-header {
+    width: 100px;
+    text-align: center;
+}
+
+.actions-header {
+    width: 100px;
+}
+
+.rate-row {
+    text-align: center;
+    color: #555;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.location-row {
+    min-width: 80px;
+}
+
+.topics-row {
+    text-align: center;
+ }
+
+.person-row .contents {
+    font-size: 0.75rem;
+    margin-left: 5px;
+    color: #888;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.person-row {
+    padding-left: 15px;
+ }
+
+.active {
+    background-color: aliceblue;
+}
+
+.archived,
+.archived a,
+.archived span,
+.archived .rate-row {
+    background-color: gainsboro;
+    color: #bbb !important;
+}
+
+.archived:hover,
+.archived:hover a,
+.archived:hover span,
+.archived:hover .rate-row {
+    color: black !important;
+}
+
+.title-overall-info{
+    font-style: italic;
+    font-size: 1rem;
+    background-color: green;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #eee;
+}
+
+.contact-established {
+    color: rgba(0, 100, 0, 0.6);
+    margin-left: 5px;
+}
+
+.archived .contact-established {
+    color: rgba(86, 86, 86, 0.3);
+}
+
+.actions-row {
+    border-left: 2px dotted rgb(222, 226, 230);
+}

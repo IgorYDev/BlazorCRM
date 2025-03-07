@@ -1,0 +1,21 @@
+﻿using Pds.Core.Enums;
+
+namespace Pds.Services.Models.Content;
+
+public class CreateContentBillModel
+{
+    public Guid ClientId { get; set; }
+
+    public string Contact { get; set; }
+
+    public string ContactName { get; set; }
+
+    public string ContactEmail { get; set; }
+        
+    public ContactType ContactType { get; set; }
+
+    public bool IsContactAgent { get; set; }
+
+    public decimal Value { get; set; }
+        
+}

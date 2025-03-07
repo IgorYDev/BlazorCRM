@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>disable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Pds.Api.Contracts\Pds.Api.Contracts.csproj" />
+      <ProjectReference Include="..\Pds.Data\Pds.Data.csproj" />
+      <ProjectReference Include="..\Pds.Services.Models\Pds.Services.Models.csproj" />
+      <ProjectReference Include="..\Pds.Web.Models\Pds.Web.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="12.0.1" />
+    </ItemGroup>
+
+</Project>

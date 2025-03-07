@@ -1,0 +1,105 @@
+﻿.card-header {
+    margin-bottom: 15px;
+}
+
+.actions-row {
+    width: 100px;
+    border-left: 2px dotted rgb(222, 226, 230);
+}
+
+.id-header,
+.paid-date-header {
+    width: 70px;
+    text-align: center;
+}
+
+.paid-date-row {
+    text-align: center;
+}
+
+.paid-date-row span {
+    font-size: 0.77rem;
+    background-color: darkgray;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: white;
+}
+
+.bill-cost-header {
+    width: 120px;
+    text-align: left;
+    padding-right: 15px;
+}
+
+.bill-cost-row {
+    text-align: left;
+    padding-right: 15px;
+}
+
+.bill-cost-row span {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-right: 5px;
+}
+
+.bill-cost-row i {
+    font-size: 0.8rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-style: normal;
+}
+
+.bill-cost-row i.yellow{
+    background-color: yellowgreen;
+    color: black;
+}
+
+.bill-cost-row i.red{
+    background-color: lightcoral;
+    color: white;
+}
+
+.bill-cost-row i.blue{
+    background-color: #44aefb;
+    color: white;
+}
+
+.id-row {
+    color: #777;;
+}
+
+.normal {
+    background-color: aliceblue;
+}
+
+.title-overall-info{
+    font-style: italic;
+    font-size: 1rem;
+    background-color: green;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #eee;
+}
+
+.comment-body{
+    min-width: 350px;
+}
+
+.active {
+    background-color: aliceblue;
+}
+
+.archived,
+.archived a,
+.archived span,
+.archived .rate-row {
+    background-color: gainsboro;
+    color: #bbb !important;
+}
+
+.archived:hover,
+.archived:hover a,
+.archived:hover span,
+.archived:hover .rate-row {
+    color: black !important;
+}

@@ -1,0 +1,49 @@
+﻿.card-header {
+    margin-bottom: 15px;
+}
+
+.actions-row {
+    width: 100px;
+    border-left: 2px dotted rgb(222, 226, 230);
+}
+
+.client-name-header{
+    width: 200px;
+}
+
+.contents{
+    font-size: 0.75rem;
+    margin-right: 5px;
+    color: #888;
+    font-weight: bold;
+}
+
+.date-style {
+    font-size: 0.75rem;
+    margin-right: 5px;
+    color: #888;
+    font-style: italic;
+}
+
+.default-brand {
+    background-color: #6a6a6a;
+    padding: 0px 8px;
+    border-radius: 4px;
+    color: white;
+    display: inline-block;
+}
+
+.brand-name-row {
+    padding-left: 15px;
+}
+
+.active {
+    background-color: aliceblue;
+}
+
+.archived,
+.archived a,
+.archived span {
+    background-color: gainsboro;
+    color: #bbb !important;
+}

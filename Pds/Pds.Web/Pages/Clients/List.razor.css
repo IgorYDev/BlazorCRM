@@ -1,0 +1,61 @@
+﻿.card-header {
+    margin-bottom: 15px;
+}
+
+.actions-header {
+    width: 100px;
+}
+
+.client-name-header{
+    width: 200px;
+}
+.country-name-header{
+    width: 120px;
+}
+
+.client-name-row .contents{
+    font-size: 0.75rem;
+    margin-left: 5px;
+    color: #888;
+    font-weight: bold;
+}
+
+.client-name-row {
+    padding-left: 15px;
+}
+
+.normal {
+    background-color: aliceblue;
+}
+
+.actions-row {
+    border-left: 2px dotted rgb(222, 226, 230);
+}
+
+.title-overall-info{
+    font-style: italic;
+    font-size: 1rem;
+    background-color: green;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #eee;
+}
+
+.active {
+    background-color: aliceblue;
+}
+
+.archived,
+.archived a,
+.archived span,
+.archived .rate-row {
+    background-color: gainsboro;
+    color: #bbb !important;
+}
+
+.archived:hover,
+.archived:hover a,
+.archived:hover span,
+.archived:hover .rate-row {
+    color: black !important;
+}

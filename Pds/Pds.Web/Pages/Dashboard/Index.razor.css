@@ -1,0 +1,174 @@
+.info {
+    margin-bottom: 15px;
+    border-bottom: 2px solid beige;
+    padding-bottom: 15px;
+}
+
+.statistics-container {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.brand-city-statistics ul,
+.brand-money-statistics ul {
+    margin-bottom: 0;
+}
+
+.brand-city-statistics-title,
+.brand-content-statistics-title,
+.brand-money-statistics-title,
+.nearest-dates-title {
+    display: block;
+    margin: 5px 10px;
+    border-radius: 0;
+    color: black;
+    text-align: center;
+    padding: 5px 0px;
+    border-bottom: 2px dotted white;
+    font-size: 0.89em;
+    font-weight: bold;
+}
+
+.brand-city-statistics-body,
+.brand-content-statistics-body,
+.brand-money-statistics-body,
+.nearest-dates-body {
+    padding: 0 15px 10px 15px;
+    display: block;
+}
+
+.brand-city-statistics,
+.brand-content-statistics,
+.brand-money-statistics,
+.nearest-dates {
+    display: block;
+    margin: 0 15px 15px 0;
+    border-radius: 10px;
+    background-color: bisque;
+    min-width: 230px;
+}
+
+.brand-city-statistics {
+    background-color: bisque;
+    min-width: 230px;
+}
+
+.brand-money-statistics {
+    background-color: gainsboro;
+    min-width: 230px;
+}
+
+.brand-content-statistics {
+    background-color: lavender;
+    min-width: 230px;
+}
+
+.nearest-dates {
+    background-color: lavender;
+    min-width: 230px;
+}
+
+.brand-city-statistics-body .city-name,
+.brand-city-statistics-body .persons-count,
+.brand-money-statistics-body .month,
+.brand-money-statistics-body .costs-sum,
+.brand-money-statistics-body .bills-sum,
+.brand-content-statistics-body .content-date,
+.brand-content-statistics-body .content-type,
+.nearest-dates .content-date,
+.nearest-dates .date-type {
+    font-size: 0.89rem;
+    padding: 0px 4px;
+    border-radius: 4px;
+    display: inline-block;
+    text-align: center;
+    word-wrap: normal;
+}
+
+.brand-city-statistics-body .city-name {
+    width: 120px;
+    background-color: white;
+}
+
+.brand-city-statistics-body .persons-count {
+    width: 70px;
+    background-color: cornflowerblue;
+    color: white;
+}
+
+.brand-money-statistics-body .month {
+    background-color: white;
+    width: 120px;
+}
+
+.brand-money-statistics-body .costs-sum {
+    background-color: lightcoral;
+    color: white;
+    width: 50px;
+}
+
+.brand-money-statistics-body .bills-sum {
+    background-color: green;
+    color: white;
+    width: 50px;
+}
+
+.brand-content-statistics-body .content-date {
+    background-color: white;
+    width: 70px;
+}
+
+.brand-content-statistics-body .today {
+    border-bottom: 2px dotted white;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.brand-content-statistics-body .not-today {
+    margin-bottom: 5px;
+}
+
+.brand-content-statistics-body .today .content-date {
+     background-color: lightcoral;
+     color: white;
+ }
+
+.brand-content-statistics-body .content-type {
+    background-color: cornflowerblue;
+    color: white;
+    width: 73px;
+    margin-right: 5px;
+}
+
+.brand-content-statistics-body .active-not-paid {
+    border-color: lightpink;
+}
+
+.brand-content-statistics-body .active-paid {
+    border-color: lightgreen;
+}
+
+.brand-content-statistics-body .free {
+    border-color: lightblue;
+}
+
+.nearest-dates .content-date {
+    background-color: white;
+    width: 70px;
+    margin-right: 5px;
+}
+
+.nearest-dates .date-type {
+    background-color: cornflowerblue;
+    color: white;
+    width: 80px;
+ }
+
+.nearest-dates .custom-link {
+    border-color: lightblue;
+}
+
+.nearest-dates .integration {
+    margin-bottom: 5px;
+}

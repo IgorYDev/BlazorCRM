@@ -1,0 +1,216 @@
+﻿@page "/"
+@inherits BasePageComponent
+@using static Pds.Web.Common.TitleExtension
+@using static Pds.Web.Common.Constants
+@using Pds.Web.Common
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Pds.Api.Contracts.Controllers.Dashboard.GetContentStatistics
+@using Pds.Api.Contracts.Controllers.Dashboard.GetCountriesStatistics
+@using Pds.Api.Contracts.Controllers.Dashboard.GetMoneyStatistics
+@using Pds.Api.Contracts.Controllers.Dashboard.GetNearestDates
+@using Pds.Core.Extensions
+@using Pds.Web.Pages.Content
+
+@inject IApiClient ApiClient
+@inject IAccessTokenProvider TokenProvider
+
+<Title>@WithSuffix("Главная")</Title>
+
+<h1>Привет!</h1>
+<div class="info">
+    @AppName - система управления контентом, разработанная специально под задачи блогеров.
+</div>
+
+@if (countriesStatistics == null)
+{
+    <p>
+        <em>Загрузка...</em>
+    </p>
+}
+else
+{
+    <div class="statistics-container">
+        @foreach (var brand in contentStatistics.Where(c => c.Contents.Any()))
+        {
+            <div class="brand-content-statistics">
+                <div class="brand-content-statistics-title">
+                    Ближайший контент: @brand.BrandName
+                </div>
+                <div class="brand-content-statistics-body">
+                    @foreach (var content in brand.Contents)
+                    {
+                        var isTodayContent = content.ReleaseDate.Date == DateTime.Now.Date;
+                        <div class="@(isTodayContent ? "today" : "not-today" )">
+                            <span class="content-date no-wrap">
+                                @content.ReleaseDate.Date.ToShortStringDateWithDay()
+                            </span>
+                            <span class="content-type">
+                                @EnumsTranslator.SocialMediaTypeToRu(content.SocialMediaType)
+                            </span>
+                            @{
+                                var additionalClass = DashboardHelper.GetContentBgColorClass(content.Status, content.Bill);
+                            }
+                            <span class="content-title">
+                                <a class="@($"custom-link {additionalClass}")" href="content/@content.Id">
+                                    @content.Title
+                                </a>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @foreach (var brand in moneyStatistics
+            .Where(s => s.BillsSumForPreviousMonth > 0 ||
+                        s.BillsSumForThisMonth > 0 ||
+                        s.CostsSumForPreviousMonth > 0 ||
+                        s.CostsSumForThisMonth > 0))
+        {
+            <div class="brand-money-statistics">
+                <div class="brand-money-statistics-title">
+                    Деньги: @brand.BrandName
+                </div>
+                @{
+                    var thisMonthsName = new DateTime(2020, DateTime.UtcNow.Month, 1).ToString("MMMM");
+                    var previousMonthsName = new DateTime(2020, DateTime.UtcNow.Month, 1).AddMonths(-1).ToString("MMMM");
+                    var thisYear = DateTime.UtcNow.Year;
+                    var previousYear = DateTime.UtcNow.AddYears(-1).Year;
+                    var previousMonthYear = new DateTime(thisYear, DateTime.UtcNow.Month, 1).AddMonths(-1).Year;
+                }
+                <div class="brand-money-statistics-body">
+                    <div>
+                        <span class="month">
+                            @thisMonthsName @thisYear
+                        </span>
+                        <span class="bills-sum">
+                            @brand.BillsSumForThisMonth.ToString("N0")
+                        </span>
+                        <span class="costs-sum">
+                            @brand.CostsSumForThisMonth.ToString("N0")
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="month">
+                            @previousMonthsName @previousMonthYear
+                        </span>
+                        <span class="bills-sum">
+                            @brand.BillsSumForPreviousMonth.ToString("N0")
+                        </span>
+                        <span class="costs-sum">
+                            @brand.CostsSumForPreviousMonth.ToString("N0")
+                        </span>
+                    </div>
+
+                    <div>
+                        <span class="month">
+                            @thisMonthsName @previousYear
+                        </span>
+                        <span class="bills-sum">
+                            @brand.BillsSumSameMonthYearAgo.ToString("N0")
+                        </span>
+                        <span class="costs-sum">
+                            @brand.CostsSumSameMonthYearAgo.ToString("N0")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @foreach (var brand in countriesStatistics.Where(b => b.Countries.Any()))
+        {
+            <div class="brand-city-statistics">
+                <div class="brand-city-statistics-title">
+                    Персоны: @brand.BrandName
+                </div>
+                <div class="brand-city-statistics-body">
+                    @foreach (var country in brand.Countries)
+                    {
+                        <div>
+                            <span class="city-name">
+                                @country.Name
+                            </span>
+                            <span class="persons-count">
+                                @country.ActivePersonsCount чел.
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if(nearestDates.NearestDateForIntegration != null ||
+            nearestDates.NearestDateForNewEpisode != null)
+        {
+            <div class="nearest-dates">
+                <div class="nearest-dates-title">
+                    Ближайшие даты: @nearestDates.BrandName
+                </div>
+                <div class="nearest-dates-body">
+                    @if (nearestDates.NearestDateForIntegration != null)
+                    {
+                        <div class="integration">
+                            <span class="date-type"> Интеграция </span>
+                            <span class="content-date">
+                                @nearestDates.NearestDateForIntegration.Value.ToShortStringDateWithDay()
+                            </span>
+                            <span>
+                                @if (!string.IsNullOrEmpty(nearestDates.ContentTitleForIntegration))
+                                {
+                                    <a class="custom-link" href="content/@nearestDates.ContentIdForIntegration">
+                                        @nearestDates.ContentTitleForIntegration
+                                    </a>
+                                }
+                            </span>
+                        </div>
+                    }
+                    @if (nearestDates.NearestDateForNewEpisode != null)
+                    {
+                        <div>
+                            <span class="date-type"> Выпуск </span>
+                            <span class="content-date">
+                                @nearestDates.NearestDateForNewEpisode.Value.ToShortStringDateWithDay()
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private GetCountriesStatisticsResponse countriesStatistics;
+    private GetMoneyStatisticsResponse moneyStatistics;
+    private GetContentStatisticsResponse contentStatistics;
+    private GetNearestDatesResponse nearestDates;
+
+    protected override async Task OnInitializedAsync()
+    {
+        countriesStatistics = await GetCountriesStatistics();
+        moneyStatistics = await GetMoneyStatistics();
+        contentStatistics = await GetContentStatistics();
+        nearestDates = await GetNearestDatesResponse();
+    }
+
+    private async Task<GetCountriesStatisticsResponse> GetCountriesStatistics()
+    {
+        return await ApiClient.Get<GetCountriesStatisticsResponse>(TokenProvider, "dashboard/countries-statistics");
+    }
+
+    private async Task<GetMoneyStatisticsResponse> GetMoneyStatistics()
+    {
+        return await ApiClient.Get<GetMoneyStatisticsResponse>(TokenProvider, "dashboard/money-statistics");
+    }
+
+    private async Task<GetContentStatisticsResponse> GetContentStatistics()
+    {
+        return await ApiClient.Get<GetContentStatisticsResponse>(TokenProvider, "dashboard/content-statistics");
+    }
+
+    private async Task<GetNearestDatesResponse> GetNearestDatesResponse()
+    {
+        return await ApiClient.Get<GetNearestDatesResponse>(TokenProvider, "dashboard/nearest-dates-for-default-brand");
+    }
+}

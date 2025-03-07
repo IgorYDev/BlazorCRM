@@ -1,0 +1,34 @@
+﻿.search-position {
+    display: flex;
+    justify-content: flex-end;
+    float: right;
+}
+
+.search-button-show{
+    display:none;
+}
+.search-btn {
+    margin-left: 10px;
+    color: #fff;
+    background-color: #1b6ec2;
+    height: 38px;
+    position: relative;
+}
+
+.searchcleaner{
+    text-align:center;
+    align-items:center;
+    position:absolute;
+    top:8px;
+    right:10px;
+}
+.searchcleaner:hover {
+    cursor:pointer;
+}
+
+@media (max-width: 641px) {
+    .search-position {
+        float: none;
+        display: inline-block;
+    }
+}

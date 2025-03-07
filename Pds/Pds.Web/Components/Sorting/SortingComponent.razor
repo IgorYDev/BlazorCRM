@@ -1,0 +1,32 @@
+﻿@typeparam TField
+
+@using Pds.Api.Contracts.Paging
+
+<a @onclick="@(() => SortColumn())">
+    @ChildContent
+    <i class="bi @(ascending ? "bi-sort-alpha-down" : "bi-sort-alpha-up") "></i>
+</a>
+
+@code {
+    [Parameter]
+    public EventCallback<OrderSetting<TField>> OnSortColumn { get; set; }
+
+    [Parameter]
+    public TField FieldName { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private bool ascending = true;
+
+    private void SortColumn()
+    {
+        ascending = !ascending;
+        var orderSettings = new OrderSetting<TField>
+        {
+            Ascending = ascending,
+            FieldName = FieldName
+        };
+
+        OnSortColumn.InvokeAsync(orderSettings);
+    }
+}

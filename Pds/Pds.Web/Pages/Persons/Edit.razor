@@ -1,0 +1,206 @@
+﻿@page "/persons/{personId}/edit"
+@inherits BasePageComponent
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Pds.Web.Common
+@using static Pds.Web.Common.TitleExtension
+@using AutoMapper
+@using Microsoft.AspNetCore.Components
+@using System.Linq
+@using Pds.Api.Contracts.Controllers.Person
+@using Pds.Api.Contracts.Controllers.Person.EditPerson
+@using Pds.Api.Contracts.Controllers.Person.GetPerson
+@using Pds.Core.Extensions
+
+@inject IApiClient ApiClient
+@inject IMapper Mapper
+@inject IAccessTokenProvider TokenProvider
+
+<Title>@WithSuffix("Редактирование персоны")</Title>
+
+@if (brands == null || person == null)
+{
+    <p>
+        <em>Загрузка...</em>
+    </p>
+}
+else
+{
+    <h4 class="card-header d-flex justify-content-between align-items-center">
+        Редактирование персоны
+        <button @onclick='() => GoBack("/persons")' class="btn btn-primary"> Назад </button>
+    </h4>
+
+    <EditForm EditContext="@editContext" OnSubmit="@HandleSubmitAsync">
+        <div class="form-group">
+            @foreach (var brand in brands)
+            {
+                var id = $"brand_{brand.Id.ToString()}";
+                <InputCheckbox name="@brand.Id" class="btn-check" @bind-Value="brand.IsSelected" Id="@id"/>
+                <label class="btn btn-secondary" for="@id">@brand.Name</label>
+            }
+        </div>
+        
+        <div class="form-group">
+            <div>
+                Создана: @person.CreatedAt.ToLongStringDate()
+            </div>
+            @if (person.UpdatedAt != null)
+            {
+                <div class="no-wrap">
+                    Отредактирована: @person.UpdatedAt.Value.ToLongStringDate()
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="last_name" class="form-label label-required">Фамилия</label>
+            <InputText class="form-control" id="last_name" @bind-Value="person.LastName"/>
+        </div>
+
+        <div class="form-group">
+            <label for="first_name" class="form-label label-required">Имя</label>
+            <InputText class="form-control" id="first_name" @bind-Value="person.FirstName"/>
+        </div>
+
+        <div class="form-group">
+            <label for="third_name" class="form-label">Отчество</label>
+            <InputText class="form-control" id="third_name" @bind-Value="person.ThirdName"/>
+        </div>
+
+        <div class="form-group">
+            <div class="location">
+                <label class="form-label">Адрес: </label>
+                <InputText class="form-control person-country" id="country" @bind-Value="person.Country" placeholder="Страна"/>
+                <InputText class="form-control person-city" id="city" @bind-Value="person.City" placeholder="Город"/>
+            </div>
+            <div class="rate">
+                <label for="person_rate" class="form-label">Рейтинг: </label>
+                <InputNumber id="person_rate" class="form-control person-rate" max="100" min="0" @bind-Value="person.Rate" placeholder="Рейтинг"/>
+            </div>
+            <div class="contact-established">
+                <InputCheckbox name="is_nds" class="btn-check" @bind-Value="person.IsContactEstablished" Id="is_contact_established"/>
+                <label for="is_contact_established" class="btn btn-sm btn-secondary">Контакт установлен</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="third_name" class="form-label">Темы</label>
+            <InputText class="form-control" id="third_name" @bind-Value="person.Topics"/>
+        </div>
+
+        <div class="form-group">
+            <label for="information" class="form-label">Информация</label>
+            <InputTextArea class="form-control" id="information" @bind-Value="person.Info" rows="3"/>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label person-links">Ссылки:</label>
+            @foreach (var resource in person.Resources)
+            {
+                <div class="margin-top form-row align-items-center">
+                    <div class="margin-bottom">
+                        <div @onclick="@(() => UpdateResource(resource, "Telegram", "https://t.me/"))" class="btn btn-primary btn-sm">tg</div>
+                        <div @onclick="@(() => UpdateResource(resource, "Linkedin", "https://linkedin.com/in/"))" class="btn btn-primary btn-sm">lnk</div>
+                        <div @onclick="@(() => UpdateResource(resource, "Facebook", "https://facebook.com/"))" class="btn btn-primary btn-sm">fb</div>
+                        <div @onclick="@(() => UpdateResource(resource, "Instagram", "https://instagram.com/"))" class="btn btn-primary btn-sm">inst</div>
+                        <div @onclick="@(() => UpdateResource(resource, "Twitter", "https://twitter.com/"))" class="btn btn-primary btn-sm">tw</div>
+                        <div @onclick="@(() => UpdateResource(resource, "VK", "https://vk.com/"))" class="btn btn-primary btn-sm">vk</div>
+                        <div @onclick="@(() => UpdateResource(resource, "YouTube", "https://youtube.com/"))" class="btn btn-primary btn-sm">yt</div>
+                        <div @onclick="() => RemoveResource(resource)" class="btn btn-danger btn-sm">Удалить ссылку</div>
+                    </div>
+                    <div class="col-auto">
+                        <InputText class="form-control mb-2" id="country" @bind-Value="resource.Name" required="required" placeholder="Название"/>
+                    </div>
+                    <div class="col-auto">
+                        <InputText class="form-control mb-2" id="city" @bind-Value="resource.Url" required="required" placeholder="Ссылка"/>
+                    </div>
+                </div>
+            }
+
+            <div @onclick="AddResource" class="margin-top btn btn-primary btn-sm">Добавить ещё</div>
+        </div>
+
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="form-group d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-success" disabled="@isSaveButtonDisabled">Сохранить</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string PersonId { get; set; }
+    private EditPersonRequest person;
+    private List<BrandForCheckboxesDto> brands;
+    private EditContext editContext;
+    private ValidationMessageStore msgStore;
+    private bool isSaveButtonDisabled;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        isSaveButtonDisabled = false;
+        person = await GetPerson();
+        brands = await GetBrandsAsync(person.Brands);
+        editContext = new EditContext(person);
+        msgStore = new ValidationMessageStore(editContext);
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        msgStore.Clear();
+        var isValid = editContext.Validate();
+
+        if (isValid)
+        {
+            isSaveButtonDisabled = true;
+            person.Brands = brands; // save new state of brands
+            var result = 
+                await ApiClient.Put<object, EditPersonRequest>(TokenProvider, "persons", person);
+            isSaveButtonDisabled = false;
+            if (result.IsSuccessStatusCode)
+            {
+                GoBack("/persons");
+            }
+            else
+            {
+                result.AddErrors(msgStore, editContext);
+            }
+        }
+    }
+
+    private async Task<List<BrandForCheckboxesDto>> GetBrandsAsync(List<BrandForCheckboxesDto> personBrands)
+    {
+        var allBrands = await ApiClient.Get<List<BrandForCheckboxesDto>>(TokenProvider, "persons/get-brands");
+        foreach (var brand in allBrands)
+        {
+            brand.IsSelected = personBrands.Select(b => b.Id).Contains(brand.Id);
+        }
+        
+        return allBrands;
+    }
+
+    private async Task<EditPersonRequest> GetPerson()
+    {
+        var personResponse = await ApiClient.Get<GetPersonResponse>(TokenProvider, $"persons/{PersonId}");
+        return Mapper.Map<EditPersonRequest>(personResponse);
+    }
+
+    private void AddResource()
+    {
+        var resource = new ResourceDto();
+        person.Resources.Add(resource);
+    }
+    
+    private void UpdateResource(ResourceDto resource, string name, string url)
+    {
+        resource.Url = url;
+        resource.Name = name;
+    }
+
+    private void RemoveResource(ResourceDto resource)
+    {
+        person.Resources.Remove(resource);
+    }
+}

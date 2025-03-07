@@ -1,0 +1,51 @@
+﻿.form-group {
+    margin-bottom: 15px;
+}
+
+.card-header {
+    margin-bottom: 15px;
+}
+
+::deep input.bill-cost{
+    width: 100px;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+::deep input.release-date{
+    width: 150px;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.contact-type {
+    margin-top: 5px;
+}
+
+.btn-free {
+    margin-right: 10px;
+}
+
+::deep .content-title {
+    width: calc(100% - 140px);
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.content-label {
+    display: block;
+}
+
+@media (max-width: 971px) {
+    ::deep .content-title {
+        width: 100%;
+        display: block;
+        margin-right: 0px;
+    }
+
+    .btn-filmed{
+        margin-top: 10px;
+    }
+}

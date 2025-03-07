@@ -1,0 +1,37 @@
+﻿<div class="search-position">
+    <div class="d-flex position-relative">
+        <input class="form-control " @bind-value="SearchText" @bind-value:event="oninput" placeholder="Поиск..."/>
+        <span class="searchcleaner position-absolute" @onclick="OnClean">&times;</span> 
+    </div>
+    <div class="search-button-show">
+        <button class="btn btn-primary search-btn" @onclick="OnSearch" type="button">Найти</button>
+    </div>      
+</div>
+
+
+@code {
+    private string searchText;
+    private string SearchText
+    {
+        get => searchText;
+        set
+        {
+            searchText = value;
+            OnSearch();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> Search { get; set; }
+
+    private void OnSearch()
+    {
+        Search.InvokeAsync(SearchText);
+    }
+
+    private void OnClean()
+    {
+        SearchText = string.Empty;
+        OnSearch();
+    }
+}

@@ -1,0 +1,59 @@
+.access-control {
+    padding: 15px 0;
+    overflow: auto;
+    background-color: lightseagreen;
+}
+
+.app-title {
+    margin: 0 auto;
+    font-size: 1.1rem;
+}
+
+.app-title ::deep a {
+    color: white;
+    text-decoration: none;
+}
+
+.app-title ::deep a:hover {
+     color: white;
+ }
+
+.nav-link span.bi {
+    width: 2rem;
+    font-size: 1.1rem;
+    vertical-align: text-top;
+    top: -2px;
+}
+
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-left: 15px;
+}
+
+.top-row {
+    height: 3.5rem;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+}
+
+.oi {
+    width: 2rem;
+    font-size: 1.1rem;
+    vertical-align: text-top;
+    top: -2px;
+}
+
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+}
